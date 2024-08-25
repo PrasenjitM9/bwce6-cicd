@@ -11,7 +11,10 @@ node{
     {
         withMaven(mavenLocalRepo: "C:/Users/Prasenjit Mahato/.m2/repository")
         {
-            bat "mvn test -f it.maletta.pipeline.tea.sample.application.parent/pom.xml"
+            dir('cicd-demo.module.application.parent') {
+                
+            bat "mvn test"
+            }
         }
     }
     stage('Deploy')
