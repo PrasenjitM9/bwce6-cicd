@@ -18,7 +18,7 @@ pipeline {
                     steps {
                             echo '########################### Cloning code from  GitHub... ###########################'
                             // Get some code from a GitHub repository
-                            git branch: 'main', url: 'https://github.com/mpandav/cicd-demo.git'
+                            git branch: 'main', url: 'https://github.com/PrasenjitM9/bwce6-cicd.git'
                     }
                 }
             }
