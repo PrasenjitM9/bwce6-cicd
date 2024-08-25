@@ -12,9 +12,6 @@ pipeline {
         {
             parallel {
                 stage('Git clone') {
-                  /*  agent {
-                        label "mac"
-                    } */
                     steps {
                             echo '########################### Cloning code from  GitHub... ###########################'
                             // Get some code from a GitHub repository
@@ -26,7 +23,6 @@ pipeline {
              
         stage('Unit Test ')
         {
-          /*  agent {label 'mac'} */
            steps
            {
            // Run Maven on a Unix agent.
@@ -43,7 +39,6 @@ pipeline {
 
     stage(' App Build ')
         {
-         /*   agent {label 'mac'}  */
            steps
            {
            // Run Maven on a Unix agent.
@@ -54,7 +49,6 @@ pipeline {
                
         stage('Artifactory')
         {
-           /* agent {label 'mac'} */
             steps
             {
                 echo '########################### Move deployables to Artifacotory Server.. ###########################'  
@@ -68,7 +62,6 @@ pipeline {
                
         stage('App Image Processing')
         {
-          /*  agent {label 'mac'} */
             steps
             {
              dir('src/') 
@@ -119,7 +112,6 @@ pipeline {
                 
         stage('K8s Deplyoment')
         {
-            agent { label 'mac' }
             steps
             {
                 echo '####################### Create Deployment for App -- ' +"${IMAGE}:${VERSION}"+'  -- in K8S Cluster... #########################'  
