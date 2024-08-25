@@ -23,7 +23,9 @@ node{
     {
         withMaven(mavenLocalRepo:"C:/Users/Prasenjit Mahato/.m2/repository")
         {
-            bat "mvn install -f it.maletta.pipeline.tea.sample.application.parent/pom.xml -DearLocation=../it.maletta.pipeline.tea.sample.application/target"
+            dir('cicd-demo.module.application.parent') {
+            bat "mvn install"
+            }
         }
     }
 }
