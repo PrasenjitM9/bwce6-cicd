@@ -74,23 +74,23 @@ pipeline {
     
                 echo '########################### Start Creating Application Image -- ' +"${IMAGE}:${VERSION}"+' -- ###############################'
                 
-                bat 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'    //docker hub login       
+               // bat 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'    //docker hub login       
                 
-                // sh "docker build -t ${IMAGE}:${VERSION} ."
+                bat "docker build -t ${IMAGE}:${VERSION} ."
                 
                 //multi architecture image build support through buildx
                 
-                bat 'docker buildx build --platform linux/arm64,linux/amd64 -t jeetdeveloper/${IMAGE}:${VERSION} --push .'
+                //bat 'docker buildx build --platform linux/arm64,linux/amd64 -t jeetdeveloper/${IMAGE}:${VERSION} --push .'
                 
                 echo '########################### App Image --  ' +"${IMAGE}:${VERSION}"+'  -- build Successfully ###############################'
 
                 echo '########################### Push an App Image --  ' +"${IMAGE}:${VERSION}"+'  -- to Registry (DockerHub)... #######################'
                             
-                // sh 'docker tag ${NAME}:${IMAGE} 10.211.55.4:5000/${IMAGE}:${VERSION}'  
+                 bat 'docker tag ${NAME}:${IMAGE} jeetdeveloper/${IMAGE}:${VERSION}'  
                             
                 // sh 'docker tag${IMAGE}:${VERSION} mpandav/${IMAGE}:${VERSION}'
                 // sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'    //push to docker hub registry       
-                // sh 'docker push mpandav/${IMAGE}:${VERSION}'
+                bat 'docker push jeetdeveloper/${IMAGE}:${VERSION}'
                               
                 // sh 'docker image rm -f ${IMAGE}:${VERSION}'   //clean up of dangling images
                               
