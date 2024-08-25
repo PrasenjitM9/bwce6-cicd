@@ -1,5 +1,5 @@
 pipeline {
-    agent none       
+    agent any       
     environment { 
             IMAGE = "bwce_cicd.jenkins-build"
             VERSION = "${BUILD_NUMBER}"
