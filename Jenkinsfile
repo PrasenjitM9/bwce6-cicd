@@ -23,7 +23,7 @@ pipeline {
              
         stage('Unit Test ')
         {
-            withMaven(mavenLocalRepo: "/home/ec2-user/.m2/repository")
+        //withMaven(mavenLocalRepo: "/home/ec2-user/.m2/repository")
            steps
            {
            // Run Maven on a Unix agent.
