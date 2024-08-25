@@ -68,18 +68,18 @@ pipeline {
             {
              dir('src/') 
             {
-                sh "pwd"
-                sh "ls -lrt"
+                //sh "pwd"
+                //sh "ls -lrt"
     
                 echo '########################### Start Creating Application Image -- ' +"${IMAGE}:${VERSION}"+' -- ###############################'
                 
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'    //docker hub login       
+                bat 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'    //docker hub login       
                 
                 // sh "docker build -t ${IMAGE}:${VERSION} ."
                 
                 //multi architecture image build support through buildx
                 
-                sh 'docker buildx build --platform linux/arm64,linux/amd64 -t mpandav/${IMAGE}:${VERSION} --push .'
+                bat 'docker buildx build --platform linux/arm64,linux/amd64 -t jeetdeveloper/${IMAGE}:${VERSION} --push .'
                 
                 echo '########################### App Image --  ' +"${IMAGE}:${VERSION}"+'  -- build Successfully ###############################'
 
@@ -120,10 +120,10 @@ pipeline {
 
                 //sh 'kubectl version'
                 // exportign variables image and version so it can dynamically updated to manifest for each run
-                sh 'export IMAGE="${IMAGE}"'
-                sh 'export VERSION="${VERSION}"'
+                bat 'export IMAGE="${IMAGE}"'
+                bat 'export VERSION="${VERSION}"'
         
-                sh 'envsubst < src/manifest.yaml | kubectl apply -f -'
+                bat 'envsubst < src/manifest.yaml | kubectl apply -f -'
                
                 //create k8s deployment for app
                 //sh 'kubectl apply -f src/manifest.yaml'
