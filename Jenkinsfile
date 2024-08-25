@@ -45,7 +45,7 @@ pipeline {
            {
            // Run Maven on a Unix agent.
             echo '###########################Building Application EAR.. ###########################'
-            sh "mvn -f src/cicd-demo.module.application.parent package"
+            bat "mvn -f src/cicd-demo.module.application.parent package"
             }
         }
                
