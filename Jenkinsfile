@@ -31,9 +31,10 @@ pipeline {
     
             dir('src/cicd-demo.module.application.parent') 
             {
-                sh "ls -lrt"
+               // sh "ls -lrt"
                 // some block
-                sh "mvn clean"
+                //sh "mvn clean"
+                bat "mvn clean"
             }
             }
         }
