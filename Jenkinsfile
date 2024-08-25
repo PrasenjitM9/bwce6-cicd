@@ -1,6 +1,7 @@
 pipeline {
     agent any       
     environment { 
+            registry = "https://hub.docker.com/jeetdeveloper/bwce-cicd"
             IMAGE = "bwce_cicd.jenkins-build"
             VERSION = "${BUILD_NUMBER}"
             DOCKERHUB_CREDENTIALS=credentials('docker-hub-personal')
