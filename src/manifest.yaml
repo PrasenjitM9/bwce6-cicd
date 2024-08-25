@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bwce-cicd-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: bwce-cicd
+      appType: tibco
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: bwce-cicd
+        appType: tibco
+      annotations:
+        integration.cloud.tibco.com/hybrid-app: "true"
+        integration.cloud.tibco.com/hybrid-app-port: "8090"
+        integration.cloud.tibco.com/hybrid-app-type: bw
+    spec:
+      containers:
+      - name: bwce-cicd-app-${VERSION}
+        image: mpandav/${IMAGE}:${VERSION}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 18080
+        - containerPort: 8090
+        env:
+        - name: BW_LOGLEVEL
+          value: ERROR
+        - name: CONSUL_SERVER_URL
+          value: "http://10.211.55.4:8500/"
+        - name: APP_CONFIG_PROFILE
+          value: "DEV"
+        - name: BW_APP_MONITORING_CONFIG
+          value: '{"url":"http://10.244.0.231:8080"}'
+        resources:
+          limits:
+            memory: 1024Mi
+          requests:
+            memory: 1024Mi
+        livenessProbe:
+          httpGet:
+            path: /health/liveness
+            port: 8090
+          failureThreshold: 1
+          periodSeconds: 10
+        startupProbe:
+          httpGet:
+            path: /health/startup
+            port: 8090
+          failureThreshold: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health/readiness
+            port: 8090
+          initialDelaySeconds: 5
+          periodSeconds: 5

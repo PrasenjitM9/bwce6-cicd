@@ -1,0 +1,140 @@
+pipeline {
+    agent none       
+    environment { 
+            IMAGE = "bwce_cicd.jenkins-build"
+            VERSION = "${BUILD_NUMBER}"
+            DOCKERHUB_CREDENTIALS=credentials('docker-hub-personal')
+            PROJECT_NAME = ""
+        }
+
+    stages {
+        stage(' Git ') 
+        {
+            parallel {
+                stage('on Mac') {
+                    agent {
+                        label "mac"
+                    }
+                    steps {
+                            echo '########################### Cloning code from  GitHub... ###########################'
+                            // Get some code from a GitHub repository
+                            git branch: 'main', url: 'https://github.com/mpandav/cicd-demo.git'
+                    }
+                }
+            }
+        }
+             
+        stage('Unit Test ')
+        {
+            agent {label 'mac'}        
+           steps
+           {
+           // Run Maven on a Unix agent.
+            echo '########################### Perform Unit Tests... ###########################'
+    
+            dir('src/cicd-demo.module.application.parent') 
+            {
+                sh "ls -lrt"
+                // some block
+                sh "mvn clean"
+            }
+            }
+        }
+
+    stage(' App Build ')
+        {
+            agent {label 'mac'}        
+           steps
+           {
+           // Run Maven on a Unix agent.
+            echo '###########################Building Application EAR.. ###########################'
+            sh "mvn -f src/cicd-demo.module.application.parent package"
+            }
+        }
+               
+        stage('Artifactory')
+        {
+            agent {label 'mac'}        
+            steps
+            {
+                echo '########################### Move deployables to Artifacotory Server.. ###########################'  
+                dir('src/cicd-demo.module.application.parent') 
+                {
+                   // sh "mvn install"
+                }
+                echo '########################### Artifacts are published to artifactory server... ###########################' 
+            }
+        }
+               
+        stage('App Image Processing')
+        {
+            agent {label 'mac'}        
+            steps
+            {
+             dir('src/') 
+            {
+                sh "pwd"
+                sh "ls -lrt"
+    
+                echo '########################### Start Creating Application Image -- ' +"${IMAGE}:${VERSION}"+' -- ###############################'
+                
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'    //docker hub login       
+                
+                // sh "docker build -t ${IMAGE}:${VERSION} ."
+                
+                //multi architecture image build support through buildx
+                
+                sh 'docker buildx build --platform linux/arm64,linux/amd64 -t mpandav/${IMAGE}:${VERSION} --push .'
+                
+                echo '########################### App Image --  ' +"${IMAGE}:${VERSION}"+'  -- build Successfully ###############################'
+
+                echo '########################### Push an App Image --  ' +"${IMAGE}:${VERSION}"+'  -- to Registry (DockerHub)... #######################'
+                            
+                // sh 'docker tag ${NAME}:${IMAGE} 10.211.55.4:5000/${IMAGE}:${VERSION}'  
+                            
+                // sh 'docker tag${IMAGE}:${VERSION} mpandav/${IMAGE}:${VERSION}'
+                // sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'    //push to docker hub registry       
+                // sh 'docker push mpandav/${IMAGE}:${VERSION}'
+                              
+                // sh 'docker image rm -f ${IMAGE}:${VERSION}'   //clean up of dangling images
+                              
+                //sh "docker push 10.211.55.4:5000/$${IMAGE}:${VERSION}". Local Docker Registry
+                
+                echo '########################### App Image --  ' +"${IMAGE}:${VERSION}"+'  -- published to Registry successfully... #######################'
+            }
+
+            }
+            post {
+                success {
+                //junit '**/target/surefire-reports/TEST-*.xml'#
+                dir('src/cicd-demo.module.application'){
+                     // some block
+                     archiveArtifacts 'target/*.*'
+                }
+                echo '######################### Archieve all artifacts... ##########################'   
+                }
+            }
+        }
+                
+                
+        stage('K8s Deplyoment')
+        {
+            agent { label 'mac' }
+            steps
+            {
+                echo '####################### Create Deployment for App -- ' +"${IMAGE}:${VERSION}"+'  -- in K8S Cluster... #########################'  
+
+                //sh 'kubectl version'
+                // exportign variables image and version so it can dynamically updated to manifest for each run
+                sh 'export IMAGE="${IMAGE}"'
+                sh 'export VERSION="${VERSION}"'
+        
+                sh 'envsubst < src/manifest.yaml | kubectl apply -f -'
+               
+                //create k8s deployment for app
+                //sh 'kubectl apply -f src/manifest.yaml'
+             }
+        }
+
+    }
+}
