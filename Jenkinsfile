@@ -29,7 +29,7 @@ pipeline {
            // Run Maven on a Unix agent.
             echo '########################### Perform Unit Tests... ###########################'
     
-            dir('src/cicd-demo.module.application.parent') 
+            dir('cicd-demo.module.application.parent') 
             {
                // sh "ls -lrt"
                 // some block
@@ -45,7 +45,7 @@ pipeline {
            {
            // Run Maven on a Unix agent.
             echo '###########################Building Application EAR.. ###########################'
-            bat "mvn -f src/cicd-demo.module.application.parent package"
+            bat "mvn -f cicd-demo.module.application.parent package"
             }
         }
                
@@ -54,7 +54,7 @@ pipeline {
             steps
             {
                 echo '########################### Move deployables to Artifacotory Server.. ###########################'  
-                dir('src/cicd-demo.module.application.parent') 
+                dir('cicd-demo.module.application.parent') 
                 {
                    // sh "mvn install"
                 }
