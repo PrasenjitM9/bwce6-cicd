@@ -22,16 +22,16 @@ pipeline {
             }
         }
         stage("sonar quality check"){
-            agent {
-                docker {
-                    image 'openjdk:11'
-                }
-            }
+            // agent {
+            //     docker {
+            //         image 'openjdk:11'
+            //     }
+            // }
             steps{
                 script{
                     withSonarQubeEnv(credentialsId: 'sonar-token') {
-                            sh 'chmod +x gradlew'
-                            sh './gradlew sonarqube'
+                            bat 'chmod +x mvn'
+                            bat './mvn sonarqube'
                     }
 
                     timeout(time: 1, unit: 'HOURS') {
