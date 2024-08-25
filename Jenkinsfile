@@ -4,7 +4,9 @@ node{
         git url:'https://github.com/PrasenjitM9/bwce6-cicd.git', credentialsId:'github-auth', branch:'main'
         withMaven(mavenLocalRepo: "C:/Users/Prasenjit Mahato/.m2/repository")
         {
-            bat "mvn clean compile -f it.maletta.pipeline.tea.sample.application.parent/pom.xml"
+            dir('cicd-demo.module.application.parent') {
+            bat "mvn clean compile"
+            }
         }
     }
     stage('Test')
