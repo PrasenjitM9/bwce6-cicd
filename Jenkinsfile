@@ -30,8 +30,8 @@ pipeline {
             steps{
                 script{
                     withSonarQubeEnv(credentialsId: 'sonar-token') {
-                            bat 'chmod +x mvn'
-                            bat './mvn sonarqube'
+                            sh 'chmod +x mvn'
+                            sh './mvn sonarqube'
                     }
 
                     timeout(time: 1, unit: 'HOURS') {
@@ -57,8 +57,8 @@ pipeline {
             {
                // sh "ls -lrt"
                 // some block
-                //sh "mvn clean"
-                bat "mvn clean"
+                sh "mvn clean"
+                //bat "mvn clean"
             }
             }
         }
@@ -69,7 +69,7 @@ pipeline {
            {
            // Run Maven on a Unix agent.
             echo '###########################Building Application EAR.. ###########################'
-            bat "mvn -f cicd-demo.module.application.parent package"
+            sh "mvn -f cicd-demo.module.application.parent package"
             }
         }
                
@@ -103,17 +103,17 @@ pipeline {
                 
                 //multi architecture image build support through buildx
                 
-                bat 'docker buildx build --platform linux/arm64,linux/amd64 -t jeetdeveloper/${IMAGE}:${VERSION} --push .'
+                sh 'docker buildx build --platform linux/arm64,linux/amd64 -t jeetdeveloper/${IMAGE}:${VERSION} --push .'
                 
                 echo '########################### App Image --  ' +"${IMAGE}:${VERSION}"+'  -- build Successfully ###############################'
 
                 echo '########################### Push an App Image --  ' +"${IMAGE}:${VERSION}"+'  -- to Registry (DockerHub)... #######################'
                             
-                bat 'docker tag ${NAME}:${IMAGE} jeetdeveloper/${IMAGE}:${VERSION}'  
+                sh 'docker tag ${NAME}:${IMAGE} jeetdeveloper/${IMAGE}:${VERSION}'  
                             
                 // sh 'docker tag${IMAGE}:${VERSION} mpandav/${IMAGE}:${VERSION}'
                 // sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'    //push to docker hub registry       
-                bat 'docker push jeetdeveloper/${IMAGE}:${VERSION}'
+                sh 'docker push jeetdeveloper/${IMAGE}:${VERSION}'
                               
                 // sh 'docker image rm -f ${IMAGE}:${VERSION}'   //clean up of dangling images
                               
@@ -144,13 +144,13 @@ pipeline {
 
                 //sh 'kubectl version'
                 // exportign variables image and version so it can dynamically updated to manifest for each run
-                bat 'export IMAGE="${IMAGE}"'
-                bat 'export VERSION="${VERSION}"'
+                sh 'export IMAGE="${IMAGE}"'
+                sh 'export VERSION="${VERSION}"'
         
-                bat 'envsubst < src/manifest.yaml | kubectl apply -f -'
+                sh 'envsubst < src/manifest.yaml | kubectl apply -f -'
                
                 //create k8s deployment for app
-                //sh 'kubectl apply -f src/manifest.yaml'
+                sh 'kubectl apply -f src/manifest.yaml'
              }
         }
 
